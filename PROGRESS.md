@@ -148,3 +148,6 @@ cloud-practice/
 ```
 Folders are created only when a service/module needs them (scaffold-as-we-go).
 `docs_html/`, `.venv/`, and `__pycache__/` are git-ignored (generated / local).
+
+**Cross-cutting references** (tool-general, not service-scoped) live at the repo root:
+- [`Terraform-Complete-Reference/`](Terraform-Complete-Reference/README.md) — fundamentals, state/backends, project structure, variables + CI/CD (incl. variable-precedence and a pipeline YAML), internals & tool comparison. See its [README](Terraform-Complete-Reference/README.md) for the index.
