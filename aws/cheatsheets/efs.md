@@ -38,8 +38,14 @@ sudo mount -t efs -o tls,accesspoint=fsap-0xyz fs-0abc123:/ /mnt/efs
 # fstab: fs-0abc123:/ /mnt/efs efs _netdev,tls 0 0
 ```
 
-## Cost levers (ranked)
-Lifecycle→IA/Archive · One Zone for non-critical · Elastic vs over-provisioned · AZ-local mounts. Watch **IA retrieval** on scans.
+## Cost model (3 axes) + live rates
+Bills for **used storage + moved bytes**, not provisioned. Axes: (1) **storage** per GB-mo by class (Standard/IA/Archive/One-Zone), (2) **throughput** by mode (Elastic=pay-per-GB · Bursting=included · Provisioned=per-MB/s), (3) **data movement** (IA/Archive retrieval fee, cross-AZ transfer). Free: mount targets, connections, API, same-AZ transfer.
+**Model is stable; rates change → always check live:**
+- Pricing: https://aws.amazon.com/efs/pricing/
+- Calculator: https://calculator.aws/
+- Billing docs: https://docs.aws.amazon.com/efs/latest/ug/how-billing-works.html
+
+**Cost levers (ranked):** Lifecycle→IA/Archive (watch **retrieval** on scans) · One Zone for non-critical · Elastic vs over-provisioned · AZ-local mounts.
 
 ## Metrics to alarm
 `BurstCreditBalance`~0 (Bursting throttle) · `PercentIOLimit`~100% (GP ops ceiling) · `StorageBytes` by class · `ClientConnections`.

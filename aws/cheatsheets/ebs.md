@@ -33,7 +33,8 @@ io2, ≤16 instances, same AZ, **shared block not shared FS** → cluster FS or 
 Modify size/type/IOPS **live** → optimization period. **Grow FS yourself:** `growpart` + `resize2fs`/`xfs_growfs`.
 
 ## Cost traps
-Provisioned GB (not used) · provisioned IOPS above baseline · snapshots (orphans!) · **FSR per-AZ-hr** · cross-Region copy. **gp2→gp3 = cheaper + faster (do first).**
+Bills **provisioned** capacity (not used): provisioned GB · provisioned IOPS above baseline · snapshots (orphans!) · **FSR per-AZ-hr** · cross-Region copy. **gp2→gp3 = cheaper + faster (do first).**
+**Rates change → check live:** https://aws.amazon.com/ebs/pricing/ · calc https://calculator.aws/ · CUR `usageType` `EBS:VolumeUsage.gp3`/`SnapshotUsage`/`VolumeP-IOPS`/`FastSnapshotRestore`.
 
 ## Key metrics
 `VolumeQueueLength` (saturation) · `BurstBalance` (gp2 cliff — alarm) · `VolumeThroughputPercentage` (io2 under-provision) · instance `EBSIOBalance%`/`EBSByteBalance%` (instance ceiling).

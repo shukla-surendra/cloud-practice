@@ -31,13 +31,50 @@ Spec sections 8, 9, 10, 11.
 | Single mount target | Cross-AZ latency + AZ risk | One per AZ |
 
 ## 3. Cost model [Documented]
-EFS bills for **what you use**, not provisioned:
-1. **Storage per GB-month by class** — Standard (highest), Standard-IA (much cheaper storage **+ per-GB retrieval fee**), Archive (cheapest + higher retrieval), and **One Zone** variants (~½ of multi-AZ). Lifecycle Management moving cold files to IA/Archive is the biggest lever.
-2. **Throughput** — **Elastic**: pay **per GB read/written**; **Provisioned**: pay for the MB/s you reserve; **Bursting**: included with storage (no extra, but size-limited).
-3. **Cross-AZ data**: keep clients mounting the **AZ-local** mount target to avoid cross-AZ transfer.
-4. **Watch:** IA **retrieval** charges if a job suddenly scans cold data (tiering can backfire on scan-heavy access); and Provisioned throughput you no longer need.
 
-**Cost levers, ranked:** Lifecycle→IA/Archive · One Zone for non-critical · Elastic (pay-per-use) vs over-provisioned · AZ-local mounts.
+> **Read this as: the billing *model* is [Documented] and stable — the dollar *rates* are not here on purpose.**
+> AWS changes prices and they vary by Region, so **never** hardcode a remembered EFS price. Pull current numbers live:
+> - **Live pricing:** https://aws.amazon.com/efs/pricing/
+> - **Model your workload:** https://calculator.aws/ (AWS Pricing Calculator)
+> - **Your actual spend:** Cost & Usage Report / Cost Explorer, filtered by `usageType` (see the `usageType` list below).
+> - **Docs:** [How EFS billing works](https://docs.aws.amazon.com/efs/latest/ug/how-billing-works.html) · [Storage classes & metering](https://docs.aws.amazon.com/efs/latest/ug/storage-classes.html)
+
+**The core idea:** EFS bills for **what you *use* (storage) + what you *move* (throughput / retrieval)** — *not* provisioned capacity (the opposite of EBS). There are **three independent axes**:
+
+### Axis 1 — Storage (per GB-month, metered, by storage class)
+You pay for **actual GB stored** (metered hourly → GB-month), at a rate that depends on which class each *file* currently sits in:
+
+| Class | Resilience | Storage rate | Read (retrieval) fee? |
+|---|---|---|---|
+| Standard | Multi-AZ | highest | none |
+| Standard-IA | Multi-AZ | much lower | **yes — per-GB retrieval** |
+| Archive | Multi-AZ | lowest (multi-AZ) | **yes — higher retrieval** |
+| One Zone | Single-AZ | ~½ of Standard | none |
+| One Zone-IA / -Archive | Single-AZ | lowest overall | **yes — retrieval** |
+
+**Lifecycle Management** moves idle files to colder classes automatically. Transitioning *into* a colder class is free; reading cold data costs (Axis 3).
+
+### Axis 2 — Throughput (billed by your **throughput mode**)
+- **Elastic** (default/recommended) — **pay per GB read and written** (writes priced higher than reads); no baseline charge. Pay-per-use; ideal for spiky load, but a sustained high-throughput workload can make this the *largest* line item.
+- **Bursting** — **no separate throughput charge**; throughput is *included* and scales with stored GB (baseline ∝ size + burst credits). You pay storage only.
+- **Provisioned** — **pay per MB/s-month** for throughput you reserve, *above* the baseline your stored data already includes. For guaranteed high throughput on a small dataset.
+
+### Axis 3 — Data movement
+- **IA / Archive retrieval** — a **per-GB fee every time you read a tiered-cold file**. This is the tiering **gotcha**: a job that scans the whole cold set can cost more in retrieval than it saved in storage. Tiering rewards a *truly cold tail*, punishes *cold-but-scanned* data.
+- **Cross-AZ data transfer** — mounting a mount target in a *different* AZ incurs normal EC2 cross-AZ transfer charges. Mount the **AZ-local** target (efs-utils/DNS does this by default) → free.
+
+### Not billed
+Mount targets (the ENIs), number of clients/connections, EFS control-plane API calls, and same-AZ data transfer.
+
+### Illustrative worked example *(ratios only — verify current rates at the pricing link above)*
+1 TB on **Standard**, ~500 GB read + 100 GB written/month via **Elastic**, AZ-local clients:
+`storage (1000 GB) + throughput (500 GB read + 100 GB write) + $0 transfer`.
+Enable **Lifecycle** and if 800 GB goes cold → most of that 1 TB now bills at the much-lower **IA** rate — **but only a net win if that cold data isn't frequently scanned** (retrieval fees would erode it).
+
+### `usageType` strings to find in your CUR / Cost Explorer
+`…-TimedStorage-ByteHrs` (Standard) · `…-IATimedStorage-ByteHrs` (IA) · `…-ArchiveTimedStorage-ByteHrs` · `…-IADataAccess-Bytes` (IA retrieval) · `…-ElasticThroughput-…Bytes` (Elastic read/write) · `…-ProvisionedTP-MiBpsHrs` (Provisioned). Exact strings vary by Region prefix — grep for `EFS`.
+
+**Cost levers, ranked:** Lifecycle→IA/Archive (biggest, mind retrieval) · One Zone for non-critical · Elastic (pay-per-use) vs over-provisioned · AZ-local mounts.
 
 ## 4. Monitoring (CloudWatch) [Documented]
 - `PercentIOLimit` (General Purpose) → near 100% = ops/sec ceiling.

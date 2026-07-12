@@ -34,6 +34,11 @@ Spec sections 8, 9, 10, 11.
 
 ## 3. Cost model (what actually bills) [Documented]
 
+> **The billing *model* below is [Documented] and stable; *rates* change and vary by Region — verify live, never hardcode a remembered price:**
+> **Live pricing:** https://aws.amazon.com/ebs/pricing/ · **Calculator:** https://calculator.aws/ · **Your spend:** Cost Explorer / CUR by `usageType` (see below).
+
+Unlike EFS (which bills *used* storage), **EBS bills *provisioned* capacity.** The big ones [Documented]:
+
 1. **Provisioned capacity, per GB-month, by type** — you pay for **provisioned size, not used** (a 500 GiB volume 10% full bills 500 GiB). Thin-provision by right-sizing + Elastic Volumes.
 2. **Provisioned IOPS/throughput** — io1/io2 bill per provisioned IOPS; gp3 bills extra IOPS/throughput **above** the 3,000/125 baseline. Don't over-dial.
 3. **Snapshots** — per GB-month of **incremental changed blocks** in S3 (cheap-ish, but **orphaned snapshots pile up**). Archive tier for cold retention; Recycle Bin has cost too.
