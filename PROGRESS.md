@@ -90,10 +90,13 @@ Legend: ⬜ Planned · 🟡 In progress · ✅ Complete
 ## 3. CURRENT POSITION  ← resume here
 
 - **Cloud / Service:** AWS · VPC / Networking (service #1)
-- **Content written so far:** M1 `aws/docs/vpc/architecture.md` · M2 `aws/docs/vpc/networking.md` + runnable Terraform `aws/terraform/vpc/` (3-tier multi-AZ VPC).
-- **Open gates (awaiting learner answers):** `aws/quizzes/vpc/module-1-gate.md` (4 Q) · `aws/quizzes/vpc/module-2-gate.md` (6 Q, incl. Terraform).
-- **Note:** learner asked to expand docs + Terraform ahead of the gated walkthrough — M1/M2 content is on disk as reference; gates still open for the interactive check.
-- **Next:** **M3 — Security Groups vs NACLs internals · ENI deep-dive · Nitro enforcement · VPC Flow Logs** → `aws/docs/vpc/security.md`, `aws/docs/vpc/internals.md`. Also pending: user may want to answer gates and/or `terraform validate` the example.
+- **Status:** ✅ **VPC documentation set COMPLETE.** Learner is reviewing/studying the full set, then will ask questions/clarifications.
+- **Content on disk:**
+  - `aws/docs/vpc/README.md` (index + study order)
+  - `architecture.md` (M1) · `networking.md` (M2) · `internals.md` · `security.md` · `best-practices.md` · `troubleshooting.md` · `interview.md`
+  - `aws/cheatsheets/vpc.md` · runnable Terraform `aws/terraform/vpc/` (3-tier multi-AZ)
+  - Each doc ends with an inline **Self-check**; standalone gates: `module-1-gate.md`, `module-2-gate.md`.
+- **Next:** await learner's questions on VPC. Then: consider a hands-on **labs/** set + more Terraform (Flow Logs, interface endpoint, remote state), and/or move to service #2 (**IAM**). Also still pending if wanted: `terraform validate` (CLI not installed locally).
 
 ### VPC per-module plan
 
@@ -101,10 +104,10 @@ Legend: ⬜ Planned · 🟡 In progress · ✅ Complete
 |--------|-------|----------------|--------|
 | M1 | Why VPC exists · two-networks mental model · internal architecture (Mapping Service, Nitro data plane, Blackfoot edge, distributed stateful SGs) | `aws/docs/vpc/architecture.md` | ✅ Delivered · gate OPEN |
 | M2 | Deep packet flow · DNS · routing · IGW/NAT · peering/TGW/endpoints/PrivateLink · **Terraform 3-tier VPC** | `aws/docs/vpc/networking.md`, `aws/terraform/vpc/` | ✅ Written · gate OPEN (`module-2-gate.md`) |
-| M3 | Security Groups vs NACLs internals · ENI deep-dive · Nitro enforcement · VPC Flow Logs | `aws/docs/vpc/security.md`, `aws/docs/vpc/internals.md` | ⬜ |
-| M4 | Advanced connectivity · multi-region/HA · real production architectures · cost | `aws/docs/vpc/best-practices.md` | ⬜ |
-| M5 | Labs · Terraform/CDK/boto3/CLI · debugging (Reachability Analyzer, Flow Logs) | `aws/labs/vpc/`, `aws/terraform/vpc/`, `aws/boto3/vpc/`, `aws/docs/vpc/troubleshooting.md` | ⬜ |
-| M6 | Interview drills · Azure VNet / GCP VPC / K8s CNI comparison · consolidation | `aws/docs/vpc/interview.md`, `aws/cheatsheets/vpc.md` | ⬜ |
+| M3 | Security Groups vs NACLs internals · ENI deep-dive · Nitro enforcement · VPC Flow Logs · threat models | `aws/docs/vpc/security.md`, `aws/docs/vpc/internals.md` | ✅ Written |
+| M4 | Advanced connectivity · multi-account/HA · real production architectures · cost · monitoring | `aws/docs/vpc/best-practices.md` | ✅ Written |
+| M5 | Debugging (connectivity chain, Reachability Analyzer, Flow Logs) · Terraform | `aws/docs/vpc/troubleshooting.md`, `aws/terraform/vpc/` | ✅ Written (labs/boto3 TODO) |
+| M6 | Interview drills (junior→principal, scenarios, incidents) · cheatsheet | `aws/docs/vpc/interview.md`, `aws/cheatsheets/vpc.md` | ✅ Written (Azure/GCP/K8s comparison TODO) |
 
 ---
 
@@ -113,6 +116,8 @@ Legend: ⬜ Planned · 🟡 In progress · ✅ Complete
 - **2026-07-12** — Project kicked off. Chose VPC as service #1, progressive gated modules, scaffold-as-we-go. Delivered VPC M1 (`aws/docs/vpc/architecture.md`); opened M1 gate.
 - **2026-07-12** — Reorganized into `aws/` + `gcp/` tracks (moved docs under `aws/`). Copied docs tooling from the `python-debugging` repo — `scripts/build_docs.py`, `scripts/check_links.py`, `Makefile`, `.gitignore` — and rebranded the generated site to "AWS & GCP Mastery". Added `requirements.txt`.
 - **2026-07-12** — Expanded AWS docs: wrote VPC **M2** (`networking.md` — building blocks, routing, IGW/NAT/endpoints/peering/TGW/DNS packet flows) + a runnable **Terraform 3-tier VPC** (`aws/terraform/vpc/`, 8 files). Added M2 gate (6 Q). Added Terraform ignores to `.gitignore`. Links validated (8 files), site builds. Terraform not installed locally → not `validate`-d yet.
+- **2026-07-12** — Overhauled the docs-site UI (`scripts/build_docs.py`): persistent collapsible left-nav sidebar (grouped by track/service, with live filter + `/` shortcut), breadcrumbs, prev/next pager, reading-progress bar, mobile drawer, no-flash theme boot, and auto-styled [Documented]/[Inferred] badges. Verified: 131 internal HTML links resolve, markdown link-check passes.
+- **2026-07-12** — **Completed the full VPC documentation set** so the learner can study end-to-end: added `internals.md`, `security.md`, `best-practices.md`, `troubleshooting.md`, `interview.md`, a `docs/vpc/README.md` index (study order), and `cheatsheets/vpc.md`. Every doc has an inline Self-check. Learner will review then ask questions.
 
 ---
 

@@ -18,7 +18,7 @@ Two tracks: **`aws/`** (active) and **`gcp/`** (planned, taught by contrast late
 
 ## Docs site
 
-All Markdown renders to a self-contained, themed HTML site (light/dark, TOC, copy-buttons):
+All Markdown renders to a self-contained, themed HTML site — persistent left-nav sidebar (grouped, filterable, `/` to focus), breadcrumbs, prev/next pager, reading-progress bar, on-page TOC with scroll-spy, code copy-buttons, auto-styled `[Documented]`/`[Inferred]` badges, and a no-flash light/dark theme:
 
 ```bash
 pip install -r requirements.txt
