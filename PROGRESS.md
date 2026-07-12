@@ -65,12 +65,13 @@ Order is chosen for dependency + distributed-systems richness. Adjustable anytim
 
 | # | Service | Status | Notes |
 |---|---------|--------|-------|
-| 1 | **VPC / Networking** | 🟡 IN PROGRESS | Foundation for everything. See per-module plan below. |
-| 2 | IAM | ⬜ Planned | Security substrate under every service. |
-| 3 | S3 | ⬜ Planned | Object storage, durability math, erasure coding, consistency. |
-| 4 | EC2 / Nitro | ⬜ Planned | Compute, Nitro cards, Firecracker, virtualization. |
-| 5 | EBS | ⬜ Planned | Block storage, replication. |
-| 6 | Route 53 | ⬜ Planned | DNS internals, health checks, routing policies. |
+| 1 | **VPC / Networking** | ⏸ Paused (docs complete) | Full doc set written; learner returning later with Q&A. |
+| 2 | **EBS** | ✅ Docs complete | Block storage. Full 7-doc set + cheatsheet + Terraform + boto3 + labs. |
+| 3 | **EFS** | ✅ Docs complete | File storage (NFS); full 6-doc set + cheatsheet + Terraform + boto3 + labs. |
+| 4 | IAM | ⬜ Planned | Security substrate under every service. |
+| 5 | S3 | ⬜ Planned | Object storage, durability math, erasure coding, consistency. |
+| 6 | EC2 / Nitro | ⬜ Planned | Compute, Nitro cards, Firecracker, virtualization. |
+| 7 | Route 53 | ⬜ Planned | DNS internals, health checks, routing policies. |
 | 7 | ELB (ALB/NLB) | ⬜ Planned | Load balancing internals, Hyperplane. |
 | 8 | RDS / Aurora | ⬜ Planned | Aurora storage-compute separation. |
 | 9 | DynamoDB | ⬜ Planned | Consistent hashing, quorum, streams. |
@@ -89,14 +90,11 @@ Legend: ⬜ Planned · 🟡 In progress · ✅ Complete
 
 ## 3. CURRENT POSITION  ← resume here
 
-- **Cloud / Service:** AWS · VPC / Networking (service #1)
-- **Status:** ✅ **VPC documentation set COMPLETE.** Learner is reviewing/studying the full set, then will ask questions/clarifications.
-- **Content on disk:**
-  - `aws/docs/vpc/README.md` (index + study order)
-  - `architecture.md` (M1) · `networking.md` (M2) · `internals.md` · `security.md` · `best-practices.md` · `troubleshooting.md` · `interview.md`
-  - `aws/cheatsheets/vpc.md` · runnable Terraform `aws/terraform/vpc/` (3-tier multi-AZ)
-  - Each doc ends with an inline **Self-check**; standalone gates: `module-1-gate.md`, `module-2-gate.md`.
-- **Next:** await learner's questions on VPC. Then: consider a hands-on **labs/** set + more Terraform (Flow Logs, interface endpoint, remote state), and/or move to service #2 (**IAM**). Also still pending if wanted: `terraform validate` (CLI not installed locally).
+- **Cloud / Service:** AWS · **EBS (#2) + EFS (#3) — both DOCS COMPLETE** (learner chose full doc set + hands-on). VPC (#1) paused, docs complete.
+- **EBS deliverables:** `aws/docs/ebs/` = README + architecture, performance, snapshots-durability, security, best-practices, troubleshooting, interview · `aws/cheatsheets/ebs.md` · `aws/terraform/ebs/` (KMS + gp3/io2 + attach + DLM) · `aws/boto3/ebs/ebs_operations.py` · `aws/labs/ebs/README.md` (8 labs).
+- **EFS deliverables:** `aws/docs/efs/` = README + architecture, performance, security, best-practices, troubleshooting, interview · `aws/cheatsheets/efs.md` · `aws/terraform/efs/` (encrypted FS + per-AZ mount targets + Access Point + TLS policy) · `aws/boto3/efs/efs_operations.py` · `aws/labs/efs/README.md` (8 labs).
+- **Key framing used:** EBS = "network disk impersonating a local disk" (single-AZ, block, Physalia control plane, 2011 outage); EFS = "managed multi-AZ NFS" (mount targets = per-AZ ENIs, Access Points, Elastic throughput). Studied as a pair for the block-vs-file contrast.
+- **Next:** await learner's Q&A on EBS/EFS. Candidates after: return to VPC Q&A, or service #4 (**IAM**) / **S3** (natural next storage). Terraform still not `validate`-d locally (no CLI); boto3 files compile.
 
 ### VPC per-module plan
 
@@ -118,6 +116,7 @@ Legend: ⬜ Planned · 🟡 In progress · ✅ Complete
 - **2026-07-12** — Expanded AWS docs: wrote VPC **M2** (`networking.md` — building blocks, routing, IGW/NAT/endpoints/peering/TGW/DNS packet flows) + a runnable **Terraform 3-tier VPC** (`aws/terraform/vpc/`, 8 files). Added M2 gate (6 Q). Added Terraform ignores to `.gitignore`. Links validated (8 files), site builds. Terraform not installed locally → not `validate`-d yet.
 - **2026-07-12** — Overhauled the docs-site UI (`scripts/build_docs.py`): persistent collapsible left-nav sidebar (grouped by track/service, with live filter + `/` shortcut), breadcrumbs, prev/next pager, reading-progress bar, mobile drawer, no-flash theme boot, and auto-styled [Documented]/[Inferred] badges. Verified: 131 internal HTML links resolve, markdown link-check passes.
 - **2026-07-12** — **Completed the full VPC documentation set** so the learner can study end-to-end: added `internals.md`, `security.md`, `best-practices.md`, `troubleshooting.md`, `interview.md`, a `docs/vpc/README.md` index (study order), and `cheatsheets/vpc.md`. Every doc has an inline Self-check. Learner will review then ask questions.
+- **2026-07-12** — Pivoted to storage (VPC paused). Built **EBS (#2)** and **EFS (#3)** as a pair, each with the **full doc set + hands-on** (learner's choice): 7 EBS docs + 6 EFS docs, two cheatsheets, Terraform modules (`terraform/ebs`, `terraform/efs`), boto3 scripts (`boto3/ebs`, `boto3/efs`), and lab guides (`labs/ebs`, `labs/efs`, 8 labs each). Framing: EBS = network-disk/single-AZ/Physalia; EFS = managed multi-AZ NFS/mount-targets/Access-Points. Links validated; boto3 compiles; site builds.
 
 ---
 
